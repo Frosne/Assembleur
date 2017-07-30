@@ -273,3 +273,5 @@ VHDL/Gates/Gates/isim/pn_info
 *.spl
 *.sym
 VHDL/Gates/Gates/isim/testBench2_isim_beh.exe.sim/tmp_save/_1
+VHDL/Gates/Gates/testbench_logical_not.bmm
+VHDL/Gates/Gates/logical_not.bmm
