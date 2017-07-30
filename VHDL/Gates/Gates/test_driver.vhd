@@ -66,8 +66,11 @@ BEGIN
         );
 
    -- Clock process definitions
+   clk_process :process
    begin
+		x <= '0';
 		wait for clk_period/2;
+		x <= '1';
 		wait for clk_period/2;
    end process;
  

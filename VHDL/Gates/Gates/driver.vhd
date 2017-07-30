@@ -1,29 +1,22 @@
--------------------------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+entity VHDL_mux is
+PORT (
+	a, b, c, d : IN BIT;
+	s1, s2 : IN BIT;  
+	x : OUT BIT
+)	;
+end VHDL_mux;
 
-entity Driver is 
-port (x: in std_logic; 
-		F: out std_logic
-);
-end Driver;
+architecture Behavioral of VHDL_mux is
+	SIGNAL miou: INTEGER;
+begin
+	miou <= 	0 when s1 = '0' and s2 = '0' else
+					1 when s1 = '0' and s2 = '1' else
+					2 when s1 = '1' and s2 = '0' else
+					3;
+	x <= a after 10 ns  when miou = 0 else
+			b after 10 ns when miou = 1 else
+			c after 10 ns when miou = 2 else
+			d after 10 ns;
 
-architecture beh1 of Driver is
-begin 
-	process (x)
-	begin
-	if (x = '1') then 
-		F<='1';
-	else
-		F<='0';
-	end if;
-end process;
-end beh1;
+end Behavioral;
 
-architecture beh2 of Driver is 
-begin 
-		process (x) 
-		begin 
-		F<=x;
-		end process;
-end beh2; 		
