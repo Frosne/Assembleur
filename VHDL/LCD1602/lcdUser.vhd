@@ -1,5 +1,7 @@
 LIBRARY ieee;
-USE ieee.std_logic_1164.all;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity lcdUser is
 	port (
@@ -22,6 +24,7 @@ architecture lcdUserArch of lcdUser is
 	signal position_temp: std_logic_vector(7 downto 0);
 	signal lcd_data_in_temp:  std_logic_vector(7 downto 0);
 	signal request_temp: std_logic;
+	signal letter: std_logic_vector(7 downto 0);
 	COMPONENT lcdController is 
 		port (
 			clk : in std_logic;
@@ -45,19 +48,20 @@ architecture lcdUserArch of lcdUser is
 	);
 end component;
 begin
-
- dut: lcd_controller
+	letter <= x"20";
+ dut: lcdController
     PORT MAP(clk => clk, reset => reset, lcd_rs=> lcd_rs, lcd_rw=> lcd_rw, lcd_en=> lcd_en, lcd_n=> lcd_n, 
-    		lcd_p=> lcd_p, vss=> vss, vdd=> vdd, vo=> vo, position=> position_temp, lcd_data_in=> lcd_data_in_temp, request=>request_temp);
+    		lcd_p=> lcd_p, vss=> vss, vdd=> vdd, vo=> vo, position=> position_temp, 
+			lcd_data_in=> lcd_data_in_temp, request=>request_temp);
   
   PROCESS(clk)
     VARIABLE char  :  INTEGER RANGE 0 TO 10 := 0;
   BEGIN
     IF(clk'EVENT AND clk = '1') THEN
-    	position_temp <= conv_integer(x"20");
-    	LCD_Data<="10000001";--80H 
+    	lcd_data_in_temp <= letter;
+    	position_temp<="10000001";--80H 
     	request_temp <= '1';
     END IF;
   END PROCESS;
  	
-end architecture lcdU;
+end architecture lcdUserArch;
