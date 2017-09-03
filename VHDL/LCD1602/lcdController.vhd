@@ -23,7 +23,7 @@ entity lcd1602Controller is
 
 		lcd_data_in: in std_logic_vector(7 downto 0);
 		lcd_data_out: out std_logic_vector (7 downto 0);
-		request : inout std_logic;
+		request : inout std_logic
 		
 	);
 end entity lcd1602Controller;
@@ -94,9 +94,9 @@ architecture beh of lcd1602Controller is
 							then currentState <= clearDisplay;
 						else 
 							currentState <= write_cgram;	
+						end if;	
 					when clearDisplay => 
 						busy <= '1';
-						cnt1 := "00000";
 						lcd_data_out <= "00000001";
 						currentState <= function_set;
 					when function_set => -- function set
