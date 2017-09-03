@@ -5,6 +5,7 @@ use ieee.std_logic_unsigned.all;
 
 entity lcd1602Controller is
 	port (
+
 		clk : in std_logic;
 		reset: in std_logic;
 		lcd_rs: out std_logic;
@@ -22,21 +23,26 @@ entity lcd1602Controller is
 
 		lcd_data_in: in std_logic_vector(7 downto 0);
 		lcd_data_out: out std_logic_vector (7 downto 0);
-		request : in std_logic;
-		busy: out std_logic
+		request : inout std_logic;
+		
 	);
 end entity lcd1602Controller;
 
 architecture beh of lcd1602Controller is
 	type state is 
-		(clearDisplay, function_set, display_on_off,
+		(main, clearDisplay, function_set, display_on_off,
 			entry_mode_set, write_cgram, set_ddram, write_data);
 	signal currentState : state;
 	signal clk1: std_logic;
 	signal clk_out: std_logic;
 	signal lcd_clk: std_logic;
+
+	signal inited : std_logic;
+	signal busy : std_logic;
 	
 	begin
+		inited <= '0';
+		busy <= '0';
 		lcd_en <= clk_out;
 		lcd_rw <= '0';
 		lcd_n <= '0';
@@ -73,20 +79,23 @@ architecture beh of lcd1602Controller is
 			end if;		
 	end process;		
 
-	process (request, currentState, reset, lcd_data_in, position, lcd_clk)
-		variable cnt1: std_logic_vector (4 downto 0);
+	process (request, currentState, reset, lcd_data_in, position, lcd_clk, inited, busy)
 		begin 
 			if reset = '0' then 
-				busy<= '1';
-				currentState <= clearDisplay;
-				cnt1 := "11110";
+				currentState <= main;
 				lcd_rs <= '0';
 			elsif request = '1' and rising_edge(LCD_Clk) then
-				busy<='1';
-				currentState<= currentState;
 				lcd_rs <= '0';
 				case currentState is 
+					when main => 
+						if busy = '1' then 
+							currentState<= currentState;
+						elsif inited = '0'
+							then currentState <= clearDisplay;
+						else 
+							currentState <= write_cgram;	
 					when clearDisplay => 
+						busy <= '1';
 						cnt1 := "00000";
 						lcd_data_out <= "00000001";
 						currentState <= function_set;
@@ -113,9 +122,9 @@ architecture beh of lcd1602Controller is
 						-- for some reason moving back
 						-- S - 0 = no display shift, 1 = display shift;
 						currentState <= write_cgram;
-						busy<= '0';
 					when write_cgram => 
 						-- Write data to CGRAM or DDRAM.
+						busy<= '1';
 						lcd_rs <= '1';
 						lcd_data_out <= lcd_data_in;	
 						currentState <= set_ddram;
@@ -127,6 +136,8 @@ architecture beh of lcd1602Controller is
 					when write_data => 
 						lcd_data_out <= "00000000";
 						currentState <= write_cgram;
+						busy <= '0';
+						request <= '0';
 					when others => null;		
 				end case;
 			end if;
