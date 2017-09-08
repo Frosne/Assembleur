@@ -93,16 +93,17 @@ begin
 		variable clk_temp: integer range 0 to 199999;
 	begin	
 		if rising_edge(CLK) then 
-			if (clk_temp < 10) then 
+			if (clk_temp < 199999) then 
 				clk_temp := clk_temp +1;
+				clk_lcd <='0';
 			else 
 				clk_temp := 0;
-				clk_lcd <= not clk_lcd;
+				clk_lcd <= '1';
 			end if;
 		end if;	
 	end process;
 	
-	request <= '1' when (busy_out = '0') else 'Z';
+	request <= '1' when (busy_out = '0' and clk_lcd = '1') else 'Z' after 1 sec; --haha
 	position <= "10000010";
 	lcd_data_in <= x"42";
 
