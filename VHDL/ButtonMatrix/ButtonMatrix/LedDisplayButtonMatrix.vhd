@@ -33,8 +33,8 @@ use IEEE.numeric_std.ALL;
 entity LedDisplayButtonMatrix is
   port (
     clk : in std_logic ;
-    -- columns : in std_logic_vector(3 downto 0);
-    -- lines : out std_logic_vector(3 downto 0);
+    columns : in std_logic_vector(3 downto 0);
+    lines : out std_logic_vector(3 downto 0);
     leds : out std_logic_vector(7 downto 0);
     ctr_leds : out std_logic_vector(3 downto 0)
   );
@@ -86,36 +86,25 @@ begin
   clk_divide_period : clockDivider generic map (period => period) port map(clk_in => clk, clk_out => clk_led);
 
   process (clk_led)
-    variable acc : integer range 0 to 3 := 0;
+    variable acc : integer range 0 to 1 := 0;
   begin
     if rising_edge(clk_led) then
-      case acc is
-        when 0 =>
-          ctr_leds <= "1000";
-          leds <= "11111001";
-        when 1 =>
-          ctr_leds <= "0100";
-          leds <= "10100100";
-        when 2 =>
-          ctr_leds <= "0010";
-          leds <= "10110000";
-        when 3 =>
-          ctr_leds <= "0001";
-          leds <= "10011001";
-      end case;
-      if acc = 3 then
-        acc := 0;
+      if buttonPressed = '0' then
+        leds <= "11111111";
+        ctr_leds <= "1111";
       else
-        acc := acc + 1;
+        case acc is
+          when 0 =>
+            ctr_leds <= "0100";
+            leds <= int4_to_sev_seg(selected_line);
+          when 1 =>
+            ctr_leds <= "0001";
+            leds <= int4_to_sev_seg(selected_column);
+        end case;
+        if acc = 1 then acc := 0; else acc := acc + 1; end if;
       end if;
     end if;
   end process;
-  -- process (clk_led)
-  -- begin
-  --   if rising_edge(clk_led) and buttonPressed = '1' then
-  --     leds <= std_logic_vector(to_unsigned(selected_line, 4)) & std_logic_vector(to_unsigned(selected_column, 4));
-  --   end if;
-  -- end process;
 
 end Behavioral;
 
