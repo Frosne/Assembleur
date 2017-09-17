@@ -1,115 +1,105 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date:    23:29:21 09/07/2017 
--- Design Name: 
--- Module Name:    lcd1602Driver - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
-----------------------------------------------------------------------------------
+
 library IEEE;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
 entity lcd1602Driver is
-	port (
-	clk : in std_logic;
-	
-	reset: in std_logic;
-	lcd_rs: out std_logic;
-	lcd_rw: out std_logic;
-	lcd_en: out std_logic;
+    port (
+    clk : in std_logic;
+    
+    reset: in std_logic;
+    lcd_rs: out std_logic;
+    lcd_rw: out std_logic;
+    lcd_en: out std_logic;
 
-	lcd_n: out std_logic;
-	lcd_p: out std_logic;
+    lcd_n: out std_logic;
+    lcd_p: out std_logic;
 
-	vss: out std_logic;
-	vdd: out std_logic;
-	vo: out std_logic;
+    vss: out std_logic;
+    vdd: out std_logic;
+    vo: out std_logic;
 
-	lcd_data_out: out std_logic_vector (7 downto 0)
-	);
+    lcd_data_out: out std_logic_vector (7 downto 0)
+    );
 end lcd1602Driver;
 
 architecture Behavioral of lcd1602Driver is
 
     component lcd1602Controller is
-     	port (
-		 	clk : IN  std_logic;
-		    clk_out : INOUT  std_logic;
-		    reset : IN  std_logic;
-		    lcd_rs : OUT  std_logic;
-		    lcd_rw : OUT  std_logic;
-		    lcd_en : OUT  std_logic;
-		    lcd_n : OUT  std_logic;
-		    lcd_p : OUT  std_logic;
-		    vss : OUT  std_logic;
-		    vdd : OUT  std_logic;
-		    vo : OUT  std_logic;
-		    position : IN  std_logic_vector(7 downto 0);
-		    lcd_data_in : IN  std_logic_vector(7 downto 0);
-		    lcd_data_out : OUT  std_logic_vector(7 downto 0);
-		    request : INout  std_logic;
-			busy_out : out std_logic	
-     	);
+        port (
+            clk : IN  std_logic;
+            reset : IN  std_logic;
+            lcd_rs : OUT  std_logic;
+            lcd_rw : OUT  std_logic;
+            lcd_en : OUT  std_logic;
+            lcd_n : OUT  std_logic;
+            lcd_p : OUT  std_logic;
+            vss : OUT  std_logic;
+            vdd : OUT  std_logic;
+            vo : OUT  std_logic;
+            position : IN  std_logic_vector(6 downto 0);
+            lcd_data_in : IN  std_logic_vector(7 downto 0);
+            lcd_data_out : OUT  std_logic_vector(7 downto 0);
+            request : in  std_logic;
+            busy_out : out std_logic
+        );
     end component; 
     
     --Inputs
-    signal position : std_logic_vector(7 downto 0) := (others => '0');
+    signal position : std_logic_vector(6 downto 0) := (others => '0');
     signal lcd_data_in : std_logic_vector(7 downto 0) := (others => '0');
     signal request : std_logic := '0';
 
- 	--Outputs
-    signal clk_out : std_logic;
-	 signal busy_out: std_logic;
-	 
-	 signal clk_lcd : std_logic := '0' ;
+    --Output
 
-	--signal request_e : std_logic := '0';
-
+    signal displayed_char : std_logic_vector(7 downto 0) := x"42";
+    signal busy_out : std_logic;
+    
 begin
+    position <= "0000010";
+    
+    process (clk)
+        variable counter: integer range 0 to 4999999;
+    begin
+        if rising_edge(clk) and counter < 4999999 then
+            counter := counter + 1;
+            --request <='0';
+        end if;
+        if counter < 10000 then
+            request <= '0';
+        elsif counter < 12000 then
+            request <= '1';
+        elsif counter < 4999997 then
+            request <= '0';
+        else
+            request <= '1';
+        end if;
+    end process;
 
-	process (clk)
-		variable clk_temp: integer range 0 to 199999;
-	begin	
-		if rising_edge(CLK) then 
-			if (clk_temp < 199999) then 
-				clk_temp := clk_temp +1;
-				clk_lcd <='0';
-			else 
-				clk_temp := 0;
-				clk_lcd <= '1';
-			end if;
-		end if;	
-	end process;
-	
-	request <= '1' when (busy_out = '0' and clk_lcd = '1') else 'Z' after 1 sec; --haha
-	position <= "10000010";
-	lcd_data_in <= x"42";
+    process (clk)
+        variable char_acc : integer range 0 to 5000000;
+        variable cc : std_logic := '0';
+    begin
+        if rising_edge(clk) then
+            if (char_acc < 5000000) then
+                char_acc := char_acc + 1;
+            else
+                char_acc := 0;
+                cc := not cc;
+                if cc = '1' then
+                    displayed_char <= x"45";
+                else
+                    displayed_char <= x"42";
+                end if;
+            end if;
+        end if;
+    end process;
 
-	lcd: lcd1602Controller port map (
+    lcd_data_in <= displayed_char;
+
+    lcd: lcd1602Controller port map (
           clk => clk,
-          clk_out => clk_out,
           reset => reset,
           lcd_rs => lcd_rs,
           lcd_rw => lcd_rw,
@@ -123,7 +113,7 @@ begin
           lcd_data_in => lcd_data_in,
           lcd_data_out => lcd_data_out,
           request => request,
-	    busy_out => busy_out
-		);
+          busy_out => busy_out
+        );
 end Behavioral;
 
