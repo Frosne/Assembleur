@@ -1,2 +1,0 @@
-# Assembleur
-Studies. Nothing. Goodbye. 
