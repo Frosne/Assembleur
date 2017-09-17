@@ -1,5 +1,10 @@
 NET "clk"  LOC = "P184"  ;
 
+NET "led[0]" LOC =" P68" ;
+NET "led[1]" LOC = "P78" ;
+NET "led[2]" LOC = "P83" ;
+NET "led[3]" LOC = "P89";
+
 # NET "RESET"  LOC = "P101"  ;
 
 NET "columns[0]"  LOC = "p75"  ;
@@ -38,11 +43,11 @@ NET "ctr_leds[3]"  LOC = "p116"  ;
 
 NET "clk" IOSTANDARD = LVCMOS33;
 
-NET "columns[0]"   PULLUP;
-NET "columns[1]"   PULLUP;
-NET "columns[2]"   PULLUP;
-NET "columns[3]"   PULLUP;
-NET "lines[0]"   PULLUP;
-NET "lines[1]"   PULLUP;
-NET "lines[2]"   PULLUP;
-NET "lines[3]"   PULLUP;
+# NET "columns[0]"   PULLUP;
+# NET "columns[1]"   PULLUP;
+# NET "columns[2]"   PULLUP;
+# NET "columns[3]"   PULLUP;
+# NET "lines[0]"   PULLUP;
+# NET "lines[1]"   PULLUP;
+# NET "lines[2]"   PULLUP;
+# NET "lines[3]"   PULLUP;

@@ -33,10 +33,11 @@ use IEEE.numeric_std.ALL;
 entity LedDisplayButtonMatrix is
   port (
     clk : in std_logic ;
-    columns : in std_logic_vector(3 downto 0);
-    lines : out std_logic_vector(3 downto 0);
+    columns : out std_logic_vector(3 downto 0);
+    lines : in std_logic_vector(3 downto 0);
     leds : out std_logic_vector(7 downto 0);
-    ctr_leds : out std_logic_vector(3 downto 0)
+    ctr_leds : out std_logic_vector(3 downto 0) ;
+    led : out std_logic_vector(3 downto 0)
   );
 end LedDisplayButtonMatrix;
 
@@ -44,12 +45,12 @@ architecture Behavioral of LedDisplayButtonMatrix is
   component buttonMatrixController is
     port (
       clk : in std_logic;
-      columns : in std_logic_vector(3 downto 0);
-      lines : out std_logic_vector(3 downto 0);
+      columns : out std_logic_vector(3 downto 0);
+      lines : in std_logic_vector(3 downto 0);
 
       res : out std_logic;
-      res_col : out integer;--std_logic_vector(1 downto 0);
-      res_line : out integer--std_logic_vector(1 downto 0);
+      res_col : out integer range 0 to 3;--std_logic_vector(1 downto 0);
+      res_line : out integer range 0 to 3--std_logic_vector(1 downto 0);
       );
   end component;
   component clockDivider is
@@ -72,8 +73,8 @@ architecture Behavioral of LedDisplayButtonMatrix is
 
   signal clk_led : std_logic := '0';
   signal buttonPressed : std_logic;
-  signal selected_line : integer;
-  signal selected_column : integer;
+  signal selected_line : integer range 0 to 3;
+  signal selected_column : integer range 0 to 3;
   constant period : integer := 100000;
 begin
 
@@ -84,6 +85,8 @@ begin
                                             res_col => selected_column,
                                             res_line=> selected_line);
   clk_divide_period : clockDivider generic map (period => period) port map(clk_in => clk, clk_out => clk_led);
+
+  led(0) <= buttonPressed;
 
   process (clk_led)
     variable acc : integer range 0 to 1 := 0;
