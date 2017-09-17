@@ -1,5 +1,9 @@
 NET "CLK" LOC = "P184"  ;
 NET "Reset"  LOC = "P101" ;
+NET "led[0]" LOC =" P68" ;
+NET "led[1]" LOC = "P78" ;
+NET "led[2]" LOC = "P83" ;
+NET "led[3]" LOC = "P89";
 NET "LCD_RS"  LOC = "p36"  ;
 NET "LCD_RW"  LOC = "p40";
 NET "LCD_EN"  LOC ="p39"   ;
