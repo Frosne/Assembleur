@@ -1,0 +1,53 @@
+NET "clk"  LOC = "P184"  ;
+
+NET "led[0]" LOC =" P68" ;
+NET "led[1]" LOC = "P78" ;
+NET "led[2]" LOC = "P83" ;
+NET "led[3]" LOC = "P89";
+
+# NET "RESET"  LOC = "P101"  ;
+
+NET "columns[0]"  LOC = "p75"  ;
+NET "columns[1]"  LOC = "p76"  ;
+NET "columns[2]"  LOC = "p69"  ;
+NET "columns[3]"  LOC = "p74"  ;
+NET "lines[0]"  LOC = "p64"  ;
+NET "lines[1]"  LOC = "p65"  ;
+NET "lines[2]"  LOC = "p62"  ;
+NET "lines[3]"  LOC = "p63"  ;
+
+NET "segments[0]"  LOC = "p119"  ;
+NET "segments[1]"  LOC = "p115"  ;
+NET "segments[2]"  LOC = "p112"  ;
+NET "segments[3]"  LOC = "p108"  ;
+NET "segments[4]"  LOC = "p106"  ;
+NET "segments[5]"  LOC = "p100"  ;
+NET "segments[6]"  LOC = "p98"  ;
+NET "segments[7]"  LOC = "p96"  ;
+
+# NET "segments[0]"  LOC = "p160"  ;
+# NET "segments[1]"  LOC = "p152"  ;
+# NET "segments[2]"  LOC = "p150"  ;
+# NET "segments[3]"  LOC = "p146"  ;
+# NET "segments[4]"  LOC = "p144"  ;
+# NET "segments[5]"  LOC = "p139"  ;
+# NET "segments[6]"  LOC = "p137"  ;
+# NET "segments[7]"  LOC = "p134"  ;
+
+NET "position[0]"  LOC = "p107"  ;
+NET "position[1]"  LOC = "p109"  ;
+NET "position[2]"  LOC = "p113"  ;
+NET "position[3]"  LOC = "p116"  ;
+
+# PlanAhead Generated IO constraints 
+
+NET "clk" IOSTANDARD = LVCMOS33;
+
+# NET "columns[0]"   PULLUP;
+# NET "columns[1]"   PULLUP;
+# NET "columns[2]"   PULLUP;
+# NET "columns[3]"   PULLUP;
+# NET "lines[0]"   PULLUP;
+# NET "lines[1]"   PULLUP;
+# NET "lines[2]"   PULLUP;
+# NET "lines[3]"   PULLUP;
