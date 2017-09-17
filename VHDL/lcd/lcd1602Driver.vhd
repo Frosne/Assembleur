@@ -3,6 +3,7 @@ library IEEE;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 use IEEE.STD_LOGIC_1164.ALL;
+use ieee.numeric_std.all;
 
 entity lcd1602Driver is
     port (
@@ -58,23 +59,63 @@ architecture Behavioral of lcd1602Driver is
 
     signal displayed_char : std_logic_vector(7 downto 0) := x"42";
     signal busy_out : std_logic;
+	 
+	 signal test: std_logic_vector(7 downto 0);
+	 signal clk_lcd: std_logic;
+	 
+	 		
+		function charToVector(a: character) return std_logic_vector is 
+			variable a1:std_logic_vector (7 downto 0);
+			variable aAsInLcd : std_logic_vector (7 downto 0);
+		begin
+			a1 := std_logic_vector( to_unsigned( character'pos('A'), 8));
+			aAsInLcd := x"42";
+			return std_logic_vector( to_unsigned( character'pos(a), 8)) - a1 + aAsInLcd - x"1";
+		end function charToVector;
 
 begin
-    position <= "0000010";
-    lcd_data_in <= displayed_char;
 
-    process (clk)
-      variable acc : integer range 0 to 50000000 := 0;
+		process(clk)
+		variable counter:integer range 0 to 19999;
+		begin
+		
+		if rising_edge(clk) then
+			if counter<19999 then
+				counter:=counter+1;
+			else
+				counter:=0;
+				clk_lcd<=not clk_lcd;
+			end if;
+		end if;
+	end process;
+	
+    process (clk_lcd)
+      variable acc : integer range 0 to 200 := 0;
     begin
-      if rising_edge(clk) then
-        if acc = 50000000 then
-          request <= '1';
+      if rising_edge(clk_lcd) then
+        if acc < 200 then
+			 acc:=acc+1;
+          request <= '0';
         else
-          acc := acc + 1;
+          acc:=0;
+			 request <= '1';
         end if;
       end if;
     end process;
 
+	process (request)
+		variable counter: integer range 0 to 5 :=0;
+	begin
+		position <= "0000000" +  std_logic_vector(to_unsigned(counter, 4));
+		lcd_data_in <= charToVector('B');
+		if rising_edge(request) then 
+			if counter <5 then 
+				counter := counter +1;
+			else 
+				counter := 0;
+			end if;
+		end if;
+	end process;	
 
     -- process (clk)
     --     variable counter: integer range 0 to 4999999;
