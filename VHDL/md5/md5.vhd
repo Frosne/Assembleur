@@ -12,11 +12,12 @@ use work.md5types.all;
 
 entity CompressionFunction is
 	port(
+		clk: in std_logic;
 		counter: integer range 0 to 63;
-		b: bytes;
-		c: bytes;
-		d: bytes;
-		result: bytes
+		b: in bytes;
+		c: in bytes;
+		d: in bytes;
+		result: out bytes
 	);
 end CompressionFunction;
 
@@ -91,9 +92,23 @@ architecture Behavioral of CompressionFunction is
 			return tempBuffer2;
 	end function CompressionFunctionP4;
 	
-	
-	
-begin 
+	begin 
+		main: process (clk, counter, b, c, d)
+		begin 
+			if (rising_edge (clk)) then
+				case counter is 
+					when 0 to 15 =>
+						result <= CompressionFunctionP1(b,c,d);
+					when 16 to 31 =>
+						result <= CompressionFunctionP2(b,c,d);
+					when 32 to 47 => 
+						result <= CompressionFunctionP3(b,c,d);
+					when 48 to 63 =>
+						result <= CompressionFunctionP4(b,c,d);
+				end case;	
+			end if;		
+		end process main;	
+
 	
 end Behavioral;
 
